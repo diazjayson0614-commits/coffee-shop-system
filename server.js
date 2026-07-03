@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const db = require("./src/config/database");
 const path = require("path");
 const session = require("express-session");
+const adminRoutes = require("./src/routes/admin.routes");
 
 dotenv.config();
 
@@ -35,6 +36,8 @@ app.use(
 ======================= */
 
 app.use("/", authRoutes);
+
+app.use("/admin", adminRoutes);
 
 /* =======================
    DATABASE TEST

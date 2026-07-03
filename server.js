@@ -1,14 +1,45 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const db = require("./src/config/database");
+const path = require("path");
+const session = require("express-session");
 
 dotenv.config();
 
 const app = express();
+const authRoutes = require("./src/routes/auth.routes");
 
 const PORT = process.env.PORT || 3000;
 
-// Test Database Connection
+/* =======================
+   MIDDLEWARE (IMPORTANT)
+======================= */
+
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "src/views"));
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.static("public"));
+
+app.use(
+    session({
+        secret: "coffee_shop_secret",
+        resave: false,
+        saveUninitialized: false
+    })
+);
+
+/* =======================
+   ROUTES (AFTER MIDDLEWARE)
+======================= */
+
+app.use("/", authRoutes);
+
+/* =======================
+   DATABASE TEST
+======================= */
+
 db.query("SELECT 1")
     .then(() => {
         console.log("✅ Connected to MySQL Database");
@@ -18,9 +49,9 @@ db.query("SELECT 1")
         console.error(err);
     });
 
-app.get("/", (req, res) => {
-    res.send("Coffee Shop Management System");
-});
+/* =======================
+   SERVER START
+======================= */
 
 app.listen(PORT, () => {
     console.log(`🚀 Server running at http://localhost:${PORT}`);
